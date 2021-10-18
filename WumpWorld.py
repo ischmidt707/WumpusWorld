@@ -63,10 +63,11 @@ class WumpWorld:
         'bump' - hit a wall (calling function should not move the agent)
         'glitter' - gold in cell
         """
+
         #Assume agent hit a wall if cell is not valid
         if( (not self.validCell(x,y)) or (self.board[x][y] == 'wall') ):
             return ['bump']
-        
+
         # start with an empty list; everything perceived will be added to it
         perception = []
         # list adjacent cells
@@ -79,13 +80,13 @@ class WumpWorld:
         if(self.board[x][y] == 'gold'):
             perception.append('glitter')
 
+        # listing things sensed in adjacent cells
         for j,k in [up,down,left,right]:
             if(self.validCell(j,k)):
-                for item in self.board[j,k]:
-                    if(item == 'wumpus'):
-                        perception.append('stench')
-                    elif(item == 'pit'):
-                        perception.append('breeze')
+                if(self.board[j,k] == 'wumpus'):
+                    perception.append('stench')
+                elif(self.board[j,k] == 'pit'):
+                    perception.append('breeze')
 
         # check for empty list, label as empty if so
         if not perception:
