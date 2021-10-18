@@ -45,6 +45,14 @@ class WumpWorld:
     def printWorld(self):
         pass
 
+    def validCell(self, x, y):
+        if(x < 0 or y < 0):
+            return False
+        elif(x > self.sqSize-1 or y > self.sqSize-1):
+            return False
+        else:
+            return True
+
     # return whatever is perceived in a requested cell
     def perceiveCell(self, x, y):
         """
@@ -55,6 +63,32 @@ class WumpWorld:
         'bump' - hit a wall (calling function should not move the agent)
         'glitter' - gold in cell
         """
+        #Assume agent hit a wall if cell is not valid
+        if( (not self.validCell(x,y)) or (self.board[x][y] == 'wall') ):
+            return ['bump']
+        
         # start with an empty list; everything perceived will be added to it
         perception = []
+        # list adjacent cells
+        up = [x,y-1]
+        down = [x,y+1]
+        left = [x-1,y]
+        right = [x+1,y]
+
+        # check for gold on actual cell
+        if(self.board[x][y] == 'gold'):
+            perception.append('glitter')
+
+        for j,k in [up,down,left,right]:
+            if(self.validCell(j,k)):
+                for item in self.board[j,k]:
+                    if(item == 'wumpus'):
+                        perception.append('stench')
+                    elif(item == 'pit'):
+                        perception.append('breeze')
+
+        # check for empty list, label as empty if so
+        if not perception:
+            perception.append('empty')
+
         return perception
