@@ -38,8 +38,8 @@ class WumpWorld:
         return startX, startY
 
     # make a duplicate world for controlled experiments
-    def duplicateProblem(self, otherWorld):
-        return copy.deepcopy(otherWorld)
+    def duplicateProblem(self):
+        return copy.deepcopy(self)
 
     # print out the current board state
     def printWorld(self):
