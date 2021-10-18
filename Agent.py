@@ -19,23 +19,20 @@ class Agent:
         self.world = world
         self.arrows = 0
         self.wumpusAlive = 0
-        self.frontierCells = 0
-        self.safeCells = 0
+        self.frontierCells = set([])
+        self.safeCells = set([])
         self.pathingRoute = 0
-        self.knowledge = [world.size + 1][world.size + 1]
-        self.pos = [0,0]
-        self.up = [self.pos[0], self.pos[1] + 1]
-        self.down = [self.pos[0], self.pos[1] - 1]
-        self.left = [self.pos[0] - 1, self.pos[1]]
-        self.up = [self.pos[0] + 1, self.pos[1]]
-        self.direction = 0
+        self.knowledge = [world.size + 2][world.size + 2] # add buffer around world for safe markers
+        self.pos = [1,1]
+        self.direction = 0 # like unit circle, 0 is facing right, 90 up, 180 left, 270 down
         self.dead = False
         self.won = False
         self.rules = []
         self.populateRules()
 
-    def initKnowledge(selfself):
-
+    #populate the initial knowledge base
+    def initKnowledge(self):
+        pass
     # populate rules [] with all the rules we are defining
     def populateRules(self):
         # if empty, all adjacent cells are safe
@@ -44,8 +41,6 @@ class Agent:
         self.rules.append(Implies("stench", "wumpus", "or"))
         # if breeze, atleast one adjacent cell has pit
         self.rules.append(Implies("breeze", "pit", "or"))
-        # if scream, wumpus has died
-        self.rules.append(Implies("scream", "death", "facing"))
         # if bump, there is a wall where move was attempted
         self.rules.append(Implies("bump", "wall", "facing"))
         # mark a wall as safe, as it cannot be a wumpus or pit
@@ -65,26 +60,44 @@ class Agent:
 
     # update knowledge base based on a single rule
     def resolve(self, x, y, rule, percept):
+        updated = False
         # if type is and, adjust all adjacent
         if rule.type == "and":
             if rule.LHS == percept:
                 if (self.updateKnowledge(x, y + 1, rule.RHS) or
-                self.updateKnowledge(x, y - 1, rule.RHS) or
-                self.updateKnowledge(x - 1, y, rule.RHS) or
-                self.updateKnowledge(x + 1, y, rule.RHS)):
-                    return True
+                    self.updateKnowledge(x, y - 1, rule.RHS) or
+                    self.updateKnowledge(x - 1, y, rule.RHS) or
+                    self.updateKnowledge(x + 1, y, rule.RHS) or
+                    self.updateKnowledge(x, y, rule.RHS)):
+                    updated = True
         # if type is or, check if only one is still possible
         if rule.type == "or":
-            templist = []
-            templist.append(self.knowledge[x][y + 1])
-            templist.append(self.knowledge[x][y + 1])
-            templist.append(self.knowledge[x][y + 1])
-            templist.append(self.knowledge[x][y + 1])
+            pass
+        # if type is facing apply it only to tile agent is facing
+        if rule.type == "facing":
+            if rule.LHS == percept:
+                if self.direction == 0:
+                    if self.updateKnowledge(x + 1, y, rule.RHS):
+                        updated = True
+                if self.direction == 90:
+                    if self.updateKnowledge(x, y + 1, rule.RHS):
+                        updated = True
+                if self.direction == 180:
+                    if self.updateKnowledge(x - 1, y, rule.RHS):
+                        updated = True
+                if self.direction == 270:
+                    if self.updateKnowledge(x, y-1, rule.RHS):
+                        updated = True
+        #if type is is, just check current tile
+        if rule.type == "is":
+            if rule.LHS == percept:
+                if self.updateKnowledge(x, y, rule.RHS):
+                    updated = True
+        #if
+        if rule.type == "not":
+            pass
 
-
-
-
-
+        return updated
 
     # iterate through all the rules and update each one until nothing else can be updated with new knowledge
     def inferenceSystem(self, x, y, percept):
@@ -107,7 +120,29 @@ class Agent:
             return "Dead"
         #run inference system to update knowledge base
         self.inferenceSystem(self.pos[0], self.pos[1], percept)
+        #add new cells to safelist and frontier list
+        # we know its safe since we are currently here!
+        self.safeCells.append((self.pos[0], self.pos[1]))
+
+        #add to frontierlist, but only if stil unexplored, safe, and not a wall
+        if ("safe" in self.knowledge[self.pos[0]][self.pos[1] + 1]) and ((self.pos[0], self.pos[1] + 1) not in self.safeCells) and "wall" not in self.knowledge[self.pos[0]][self.pos[1] + 1]:
+            self.frontierCells.append((self.pos[0], self.pos[1] + 1))
+        if ("safe" in self.knowledge[self.pos[0]][self.pos[1] - 1]) and ((self.pos[0], self.pos[1] - 1) not in self.safeCells) and "wall" not in self.knowledge[self.pos[0]][self.pos[1] - 1]:
+            self.frontierCells.append((self.pos[0], self.pos[1] - 1))
+        if ("safe" in self.knowledge[self.pos[0] - 1][self.pos[1]]) and ((self.pos[0] - 1, self.pos[1]) not in self.safeCells) and "wall" not in self.knowledge[self.pos[0] - 1][self.pos[1]]:
+            self.frontierCells.append((self.pos[0] - 1, self.pos[1]))
+        if ("safe" in self.knowledge[self.pos[0] + 1][self.pos[1]]) and ((self.pos[0] + 1, self.pos[1]) not in self.safeCells) and "wall" not in self.knowledge[self.pos[0] + 1][self.pos[1]]:
+            self.frontierCells.append((self.pos[0] + 1, self.pos[1]))
+
+        #by default, if multiple safe adjacent options will choose to go up first then
         pass
 
+    def solve(self):
+        while not (self.won or self.dead):
+            self.takeAction()
+        if self.won:
+            return "Won!"
+        if self.dead:
+            return "Dead"
     def generateRoute(self):
         pass
