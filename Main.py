@@ -16,6 +16,9 @@ class Main:
 
     def main(self):
         for w in range(1):
-            self.agentWorlds.append(WumpWorld(5,self.P_pit,self.P_obs,self.P_wumpus))
+            self.agentWorlds.append(WumpWorld(5, self.P_pit, self.P_obs, self.P_wumpus))
         for a in self.agentWorlds:
             self.reactiveAgentWorlds.append(a.duplicateProblem)
+
+        self.agentWorlds[0].printWorld()
+        self.reactiveAgentWorlds[0].printWorld()

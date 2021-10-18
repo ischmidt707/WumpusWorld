@@ -43,7 +43,16 @@ class WumpWorld:
 
     # print out the current board state
     def printWorld(self):
-        pass
+        printDict = {
+            "empty": "*",
+            "pit": "P",
+            "wumpus": "W",
+            "wall": "O"
+        }
+        for x in range(self.sqSize):
+            for y in range(self.sqSize):
+                print(printDict[self.board[x][y]])
+            print("\n")
 
     def validCell(self, x, y):
         if(x < 0 or y < 0):
