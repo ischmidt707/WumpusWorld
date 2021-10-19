@@ -140,7 +140,8 @@ class ReactiveAgent:
     def solve(self):
         while not (self.won or self.deadbyWumpus or self.deadbyPit):
             self.takeAction()
-            print(self.frontierCells)
+            if self.actions > 3000:
+                break
 
         # returns if gold found or dead, number of wumpus killed, number of cells explored, and number of actions
         return self.won, self.deadbyWumpus, self.deadbyPit, self.wumpusDead, len(self.safelist), self.actions
