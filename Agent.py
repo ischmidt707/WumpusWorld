@@ -128,13 +128,13 @@ class Agent:
         percept = self.world.perceiveCell(self.pos[0], self.pos[1])
         # check for game ending conditions
         if 'glitter' in percept:
-            self.won == True
+            self.won = True
             return "Won"
         if 'wumpus' in percept:
-            self.deadbyWumpus == True
+            self.deadbyWumpus = True
             return "Wumpus"
         if 'pit' in percept:
-            self.deadbyPit == True
+            self.deadbyPit = True
             return "Pit"
 
         # if was bumped previous time, add bump to percepts so its properly processed this time
@@ -147,25 +147,25 @@ class Agent:
         self.inferenceSystem(self.pos[0], self.pos[1], percept)
         # add new cells to safelist and frontier list
         # we know its safe since we are currently here!
-        self.safeCells.append((self.pos[0], self.pos[1]))
+        self.safeCells.add((self.pos[0], self.pos[1]))
 
         # add to frontierlist, but only if stil unexplored, safe, and not a wall
         if ("safe" in self.knowledge[self.pos[0]][self.pos[1] + 1]) and (
                 (self.pos[0], self.pos[1] + 1) not in self.safeCells) and "wall" not in self.knowledge[self.pos[0]][
             self.pos[1] + 1]:
-            self.frontierCells.append((self.pos[0], self.pos[1] + 1))
+            self.frontierCells.add((self.pos[0], self.pos[1] + 1))
         if ("safe" in self.knowledge[self.pos[0]][self.pos[1] - 1]) and (
                 (self.pos[0], self.pos[1] - 1) not in self.safeCells) and "wall" not in self.knowledge[self.pos[0]][
             self.pos[1] - 1]:
-            self.frontierCells.append((self.pos[0], self.pos[1] - 1))
+            self.frontierCells.add((self.pos[0], self.pos[1] - 1))
         if ("safe" in self.knowledge[self.pos[0] - 1][self.pos[1]]) and (
                 (self.pos[0] - 1, self.pos[1]) not in self.safeCells) and "wall" not in self.knowledge[self.pos[0] - 1][
             self.pos[1]]:
-            self.frontierCells.append((self.pos[0] - 1, self.pos[1]))
+            self.frontierCells.add((self.pos[0] - 1, self.pos[1]))
         if ("safe" in self.knowledge[self.pos[0] + 1][self.pos[1]]) and (
                 (self.pos[0] + 1, self.pos[1]) not in self.safeCells) and "wall" not in self.knowledge[self.pos[0] + 1][
             self.pos[1]]:
-            self.frontierCells.append((self.pos[0] + 1, self.pos[1]))
+            self.frontierCells.add((self.pos[0] + 1, self.pos[1]))
 
         # first, if known next to wumpus, kill it, then try moving otherwise
         # by default, if multiple safe adjacent options will choose to go right first then ccw for choosing
@@ -239,16 +239,20 @@ class Agent:
             self.pos[0] = newspot[0]
             self.pos[1] = newspot[1]
             popped = True
-        else:  # if all else fails, just go to a random adjacent cell or shoot random adjacent cell
+        else:  # if all else fails, just go to a random adjacent cell
             self.direction = random.randint(0, 3) * 90
             if self.direction == 0:
-                self.pos[0] += 1
+                if "wall" not in self.knowledge[self.pos[0] + 1, self.pos[1]]:
+                    self.pos[0] += 1
             elif self.direction == 90:
-                self.pos[1] += 1
+                if "wall" not in self.knowledge[self.pos[0], self.pos[1] + 1]:
+                    self.pos[1] += 1
             elif self.direction == 180:
-                self.pos[0] -= 1
+                if "wall" not in self.knowledge[self.pos[0] - 1, self.pos[1]]:
+                    self.pos[0] -= 1
             elif self.direction == 270:
-                self.pos[1] -= 1
+                if "wall" not in self.knowledge[self.pos[0], self.pos[1] - 1]:
+                    self.pos[1] -= 1
         # before moving on, add current cell to pathing route stack if any position has changed and not already backtracking
         if (x != self.pos[0] or y != self.pos[1]) and not popped:
             self.pathingRoute.append((self.pos[0], self.pos[1]))
@@ -261,4 +265,4 @@ class Agent:
             bumped = self.takeAction(bumped)
 
         # returns if gold found or dead, number of wumpus killed, number of cells explored, and number of actions
-        return self.won, self.dead, self.wumpusDead, len(self.safeCells), self.actions
+        return self.won, self.deadbyWumpus, self.deadbyPit, self.wumpusDead, len(self.safeCells), self.actions
