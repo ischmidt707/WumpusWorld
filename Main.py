@@ -14,9 +14,9 @@ class Main:
         self.PosYarr = []
         self.arrowsarr = []
         self.reactiveAgentWorlds = []
-        self.P_pit = 0.10
-        self.P_obs = 0.10
-        self.P_wumpus = 0.10
+        self.P_pit = 0.05
+        self.P_obs = 0.05
+        self.P_wumpus = 0.05
 
     def main(self):
 
@@ -91,7 +91,7 @@ class Main:
         for i in self.reactiveAgentWorlds:
             a = Agent(i, self.PosXarr[counter], self.PosYarr[counter], self.arrowsarr[counter])
             counter += 1
-            won, deadbyWumpus, deadbyPit, exploredCount, actionCount = a.solve()
+            won, deadbyWumpus, deadbyPit, wumpusDead, exploredCount, actionCount = a.solve()
             totalwon += won
             totalwum += deadbyWumpus
             totalpit += deadbyPit

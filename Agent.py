@@ -138,10 +138,10 @@ class Agent:
         if 'glitter' in percept:
             self.won = True
             return "Won"
-        if 'wumpus' in self.world.board[x][y]:
+        if self.world.board[x][y] == 'wumpus':
             self.deadbyWumpus = True
             return "Wumpus"
-        if 'pit' in self.world.board[x][y]:
+        if self.world.board[x][y] == 'pit':
             self.deadbyPit = True
             return "Pit"
 
