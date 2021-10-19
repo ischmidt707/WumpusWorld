@@ -113,9 +113,9 @@ class WumpWorld:
         # listing things sensed in adjacent cells
         for j, k in [up, down, left, right]:
             if (self.validCell(j, k)):
-                if (self.board[j, k] == 'wumpus'):
+                if (self.board[j][k] == 'wumpus'):
                     perception.append('stench')
-                elif (self.board[j, k] == 'pit'):
+                elif (self.board[j][k] == 'pit'):
                     perception.append('breeze')
 
         # check for empty list, label as empty if so

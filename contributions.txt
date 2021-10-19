@@ -1,0 +1,4 @@
+Nicholas Dzomba - Agent and Reactive Agent
+Isaac Schmidt - WumpWorld and Main
+
+We both did significant debugging work on all the code together.

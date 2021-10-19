@@ -46,7 +46,7 @@ class Agent:
         self.rules.append(Implies("bump", "wall", "facing"))
         # mark a wall as safe, as it cannot be a wumpus or pit
         self.rules.append(Implies("wall", "safe", "is"))
-
+        
     def updateKnowledge(self, x, y, term):
         if term not in self.knowledge[x][y]:
             self.knowledge[x][y].append(term)
