@@ -49,7 +49,6 @@ class WumpWorld:
         while [goldX, goldY] == [startX, startY]:
             goldX, goldY = [random.randint(1, self.size), random.randint(1, self.size)]
         self.board[goldX][goldY] = 'gold'
-        print(goldX, goldY)
 
         # return the starting position so the agent knows where it is, and number of wumpuses
         return startX, startY, wumpCount

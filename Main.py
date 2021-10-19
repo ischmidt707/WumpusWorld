@@ -24,8 +24,9 @@ class Main:
 
         a = Agent(self.agentWorlds[0], posX, posY, arrows)
         self.agentWorlds[0].printWorld()
-        self.reactiveAgentWorlds[0].printWorld()
 
+        won, deadbyWumpus, deadbyPit, wumpusDead, exploredCount, actionCount = a.solve()
+        print(won, deadbyWumpus, deadbyPit, wumpusDead, exploredCount, actionCount)
 
 m = Main()
 m.main()
