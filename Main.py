@@ -4,6 +4,7 @@ Statistics will be tracked here.
 """
 from WumpWorld import *
 from Agent import *
+from ReactiveAgent import *
 
 
 class Main:
@@ -22,10 +23,11 @@ class Main:
             posX, posY, arrows = self.agentWorlds[0].generateProblem()
             self.reactiveAgentWorlds.append(self.agentWorlds[w].duplicateProblem())
 
-        a = Agent(self.agentWorlds[0], posX, posY, arrows)
+        #a = Agent(self.agentWorlds[0], posX, posY, arrows)
+        b = ReactiveAgent(self.agentWorlds[0], posX, posY, arrows)
         self.agentWorlds[0].printWorld(posX, posY)
 
-        won, deadbyWumpus, deadbyPit, wumpusDead, exploredCount, actionCount = a.solve()
+        won, deadbyWumpus, deadbyPit, wumpusDead, exploredCount, actionCount = b.solve()
         print(won, deadbyWumpus, deadbyPit, wumpusDead, exploredCount, actionCount)
 
 m = Main()

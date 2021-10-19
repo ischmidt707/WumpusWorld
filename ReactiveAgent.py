@@ -9,9 +9,10 @@ It will be used as a control for comparisons.
 
 class ReactiveAgent:
 
-    def __init__(self, world, x, y):
+    def __init__(self, world, x, y, arrows):
         self.world = world
         self.pos = [x,y]
+        self.arrows = arrows
         self.actions = 0
         self.safelist = set([])
         self.frontierCells = set([])
