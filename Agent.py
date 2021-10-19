@@ -22,8 +22,8 @@ class Agent:
         self.world = world
         self.arrows = arrows
         self.wumpusDead = 0
-        self.frontierCells = set([])
-        self.safeCells = set([])
+        self.frontierCells = set()
+        self.safeCells = set()
         self.pathingRoute = []
         self.knowledge = [[["hello", "world"] for i in range(self.world.size + 2)] for j in
                           range(self.world.size + 2)]  # add buffer around world for safe markers
@@ -34,7 +34,16 @@ class Agent:
         self.won = False
         self.rules = []
         self.populateRules()
+        self.initKnowledge()
 
+    def initKnowledge(self):
+        for i in range (0, self.world.size+2):
+            for j in range(0, self.world.size+2):
+                self.knowledge[i][j].remove("hello")
+                self.knowledge[i][j].remove("world")
+                if i == 0 or j == 0 or i == self.world.size+1 or j == self.world.size+1:
+                    self.knowledge[i][j].append("wall")
+        print(self.knowledge)
     # populate rules [] with all the rules we are defining
     def populateRules(self):
         # if empty, all adjacent cells are safe
@@ -120,6 +129,10 @@ class Agent:
     def takeAction(self, bumped):
         x = self.pos[0]
         y = self.pos[1]
+        self.world.printWorld(x,y)
+        print(self.frontierCells)
+        print(self.safeCells)
+        print(self.knowledge)
         self.actions += 1
         # check percepts in current spot
         percept = self.world.perceiveCell(self.pos[0], self.pos[1])
@@ -127,10 +140,10 @@ class Agent:
         if 'glitter' in percept:
             self.won = True
             return "Won"
-        if 'wumpus' in percept:
+        if 'wumpus' in self.world.board[x][y]:
             self.deadbyWumpus = True
             return "Wumpus"
-        if 'pit' in percept:
+        if 'pit' in self.world.board[x][y]:
             self.deadbyPit = True
             return "Pit"
 

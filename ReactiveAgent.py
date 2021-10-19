@@ -25,6 +25,7 @@ class ReactiveAgent:
     def takeAction(self):
         x = self.pos[0]
         y = self.pos[1]
+        print(self.world.printWorld(x,y))
         popped = False
         self.actions += 1
         percept = self.world.perceiveCell(x, y)
@@ -41,10 +42,14 @@ class ReactiveAgent:
         self.safelist.add((x,y))
 
         if "empty" in percept:
-            self.frontierCells.add((self.pos[0] + 1, self.pos[1]))
-            self.frontierCells.add((self.pos[0], self.pos[1] + 1))
-            self.frontierCells.add((self.pos[0] - 1, self.pos[1]))
-            self.frontierCells.add((self.pos[0], self.pos[1] - 1))
+            if (self.pos[0] + 1, self.pos[1]) not in self.safelist:
+                self.frontierCells.add((self.pos[0] + 1, self.pos[1]))
+            if (self.pos[0], self.pos[1] + 1) not in self.safelist:
+                self.frontierCells.add((self.pos[0], self.pos[1] + 1))
+            if ((self.pos[0] - 1, self.pos[1])) not in self.safelist:
+                self.frontierCells.add((self.pos[0] - 1, self.pos[1]))
+            if (self.pos[0], self.pos[1] - 1) not in self.safelist:
+                self.frontierCells.add((self.pos[0], self.pos[1] - 1))
 
         if (self.pos[0] + 1, self.pos[1]) in self.frontierCells:
             self.direction = 0
