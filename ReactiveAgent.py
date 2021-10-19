@@ -16,11 +16,13 @@ class ReactiveAgent:
         self.actions = 0
         self.safelist = set([])
         self.frontierCells = set([])
+        self.badFrontierCells = set([])
         self.pathingRoute = []
         self.won = False
         self.deadbyWumpus = False
         self.deadbyPit = False
         self.direction = 0
+        self.wumpusDead = 0
 
     def takeAction(self):
         x = self.pos[0]
@@ -32,10 +34,10 @@ class ReactiveAgent:
         if 'glitter' in percept:
             self.won = True
             return
-        if 'wumpus' in percept:
+        if self.world.board[x][y] == 'wumpus':
             self.deadbyWumpus = True
             return
-        if 'pit' in percept:
+        if self.world.board[x][y] == 'pit':
             self.deadbyPit = True
             return
         #current spot is confirmed to be safe and explored
@@ -50,6 +52,15 @@ class ReactiveAgent:
                 self.frontierCells.add((self.pos[0] - 1, self.pos[1]))
             if (self.pos[0], self.pos[1] - 1) not in self.safelist:
                 self.frontierCells.add((self.pos[0], self.pos[1] - 1))
+        else:
+            if (self.pos[0] + 1, self.pos[1]) not in self.safelist:
+                self.badFrontierCells.add((self.pos[0] + 1, self.pos[1]))
+            if (self.pos[0], self.pos[1] + 1) not in self.safelist:
+                self.badFrontierCells.add((self.pos[0], self.pos[1] + 1))
+            if ((self.pos[0] - 1, self.pos[1])) not in self.safelist:
+                self.badFrontierCells.add((self.pos[0] - 1, self.pos[1]))
+            if (self.pos[0], self.pos[1] - 1) not in self.safelist:
+                self.badFrontierCells.add((self.pos[0], self.pos[1] - 1))
 
         if (self.pos[0] + 1, self.pos[1]) in self.frontierCells:
             self.direction = 0
@@ -75,6 +86,31 @@ class ReactiveAgent:
                 self.pos[1] -= 1
             else:
                 self.frontierCells.remove((self.pos[0], self.pos[1] - 1))
+        elif self.badFrontierCells:
+            if (self.pos[0] + 1, self.pos[1]) in self.badFrontierCells:
+                self.direction = 0
+                if "bump" not in self.world.perceiveCell(self.pos[0] + 1, self.pos[1]):
+                    self.pos[0] += 1
+                else:
+                    self.badFrontierCells.remove((self.pos[0] + 1, self.pos[1]))
+            elif (self.pos[0], self.pos[1] + 1) in self.badFrontierCells:
+                self.direction = 90
+                if "bump" not in self.world.perceiveCell(self.pos[0], self.pos[1] + 1):
+                    self.pos[1] += 1
+                else:
+                    self.badFrontierCells.remove((self.pos[0], self.pos[1] + 1))
+            elif (self.pos[0] - 1, self.pos[1]) in self.badFrontierCells:
+                self.direction = 180
+                if "bump" not in self.world.perceiveCell(self.pos[0] - 1, self.pos[1]):
+                    self.pos[0] -= 1
+                else:
+                    self.badFrontierCells.remove((self.pos[0] - 1, self.pos[1]))
+            elif (self.pos[0], self.pos[1] - 1) in self.badFrontierCells:
+                self.direction = 270
+                if "bump" not in self.world.perceiveCell[self.pos[0]][self.pos[1] - 1]:
+                    self.pos[1] -= 1
+                else:
+                    self.badFrontierCells.remove((self.pos[0], self.pos[1] - 1))
         elif self.pathingRoute:  # start backtracking if pathingRoute is not empty
             newspot = self.pathingRoute.pop()
             self.pos[0] = newspot[0]
@@ -104,6 +140,7 @@ class ReactiveAgent:
     def solve(self):
         while not (self.won or self.deadbyWumpus or self.deadbyPit):
             self.takeAction()
+            print(self.frontierCells)
 
         # returns if gold found or dead, number of wumpus killed, number of cells explored, and number of actions
-        return self.won, self.deadbyWumpus, self.deadbyPit, len(self.safelist), self.actions
+        return self.won, self.deadbyWumpus, self.deadbyPit, self.wumpusDead, len(self.safelist), self.actions
