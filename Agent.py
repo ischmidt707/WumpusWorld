@@ -229,7 +229,7 @@ class Agent:
                 bumped = True
         elif (self.pos[0], self.pos[1] - 1) in self.frontierCells:
             self.direction = 270
-            if "bump" not in self.world.perceiveCell(self.pos[0], self.pos[1] - 1):
+            if "bump" not in self.world.perceiveCell[self.pos[0]][self.pos[1] - 1]:
                 self.pos[1] -= 1
             else:
                 self.frontierCells.remove((self.pos[0], self.pos[1] - 1))
@@ -239,8 +239,10 @@ class Agent:
             self.pos[0] = newspot[0]
             self.pos[1] = newspot[1]
             popped = True
-        else:  # if all else fails, just go to a random adjacent cell
-
+        else:  # if all else fails, just go to a random adjacent cell or shoot random adjacent cell
+            self.direction = random.randint(0, 3)*90
+            if "stench":
+                pass
         # before moving on, add current cell to pathing route stack if any position has changed and not already backtracking
         if (x != self.pos[0] or y != self.pos[1]) and not popped:
             self.pathingRoute.append((self.pos[0], self.pos[1]))
