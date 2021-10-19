@@ -152,19 +152,19 @@ class Agent:
         # add to frontierlist, but only if stil unexplored, safe, and not a wall
         if ("safe" in self.knowledge[self.pos[0]][self.pos[1] + 1]) and (
                 (self.pos[0], self.pos[1] + 1) not in self.safeCells) and "wall" not in self.knowledge[self.pos[0]][
-                self.pos[1] + 1]:
+            self.pos[1] + 1]:
             self.frontierCells.append((self.pos[0], self.pos[1] + 1))
         if ("safe" in self.knowledge[self.pos[0]][self.pos[1] - 1]) and (
                 (self.pos[0], self.pos[1] - 1) not in self.safeCells) and "wall" not in self.knowledge[self.pos[0]][
-                self.pos[1] - 1]:
+            self.pos[1] - 1]:
             self.frontierCells.append((self.pos[0], self.pos[1] - 1))
         if ("safe" in self.knowledge[self.pos[0] - 1][self.pos[1]]) and (
                 (self.pos[0] - 1, self.pos[1]) not in self.safeCells) and "wall" not in self.knowledge[self.pos[0] - 1][
-                self.pos[1]]:
+            self.pos[1]]:
             self.frontierCells.append((self.pos[0] - 1, self.pos[1]))
         if ("safe" in self.knowledge[self.pos[0] + 1][self.pos[1]]) and (
                 (self.pos[0] + 1, self.pos[1]) not in self.safeCells) and "wall" not in self.knowledge[self.pos[0] + 1][
-                self.pos[1]]:
+            self.pos[1]]:
             self.frontierCells.append((self.pos[0] + 1, self.pos[1]))
 
         # first, if known next to wumpus, kill it, then try moving otherwise
@@ -240,9 +240,15 @@ class Agent:
             self.pos[1] = newspot[1]
             popped = True
         else:  # if all else fails, just go to a random adjacent cell or shoot random adjacent cell
-            self.direction = random.randint(0, 3)*90
-            if "stench":
-                pass
+            self.direction = random.randint(0, 3) * 90
+            if self.direction == 0:
+                self.pos[0] += 1
+            elif self.direction == 90:
+                self.pos[1] += 1
+            elif self.direction == 180:
+                self.pos[0] -= 1
+            elif self.direction == 270:
+                self.pos[1] -= 1
         # before moving on, add current cell to pathing route stack if any position has changed and not already backtracking
         if (x != self.pos[0] or y != self.pos[1]) and not popped:
             self.pathingRoute.append((self.pos[0], self.pos[1]))
