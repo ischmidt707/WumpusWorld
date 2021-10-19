@@ -36,6 +36,8 @@ class ReactiveAgent:
         if 'pit' in percept:
             self.deadbyPit = True
             return
+        #current spot is confirmed to be safe and explored
+        self.safelist.add((x,y))
 
         if "empty" in percept:
             self.frontierCells.add((self.pos[0] + 1, self.pos[1]))
