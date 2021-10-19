@@ -176,11 +176,17 @@ class Agent:
                 self.arrows -= 1
                 self.world.board[self.pos[0] + 1][self.pos[1]] = "empty"
                 self.knowledge[self.pos[0] + 1][self.pos[1]].remove("wumpus")
+            else:
+                self.arrows -= 1
+                self.knowledge[self.pos[0] + 1][self.pos[1]].remove("wumpus")
         elif "wumpus" in self.knowledge[self.pos[0]][self.pos[1] + 1]:
             if self.world.board[self.pos[0]][self.pos[1] + 1] == "wumpus":
                 self.wumpusDead += 1
                 self.arrows -= 1
                 self.world.board[self.pos[0]][self.pos[1] + 1] = "empty"
+                self.knowledge[self.pos[0]][self.pos[1] + 1].remove("wumpus")
+            else:
+                self.arrows -= 1
                 self.knowledge[self.pos[0]][self.pos[1] + 1].remove("wumpus")
         elif "wumpus" in self.knowledge[self.pos[0] - 1][self.pos[1]]:
             if self.world.board[self.pos[0] - 1][self.pos[1]] == "wumpus":
@@ -188,11 +194,17 @@ class Agent:
                 self.arrows -= 1
                 self.world.board[self.pos[0] - 1][self.pos[1]] = "empty"
                 self.knowledge[self.pos[0] - 1][self.pos[1]].remove("wumpus")
+            else:
+                self.arrows -= 1
+                self.knowledge[self.pos[0]][self.pos[1] + 1].remove("wumpus")
         elif "wumpus" in self.knowledge[self.pos[0]][self.pos[1] - 1]:
             if self.world.board[self.pos[0]][self.pos[1] - 1] == "wumpus":
                 self.wumpusDead += 1
                 self.arrows -= 1
                 self.world.board[self.pos[0]][self.pos[1] - 1] = "empty"
+                self.knowledge[self.pos[0]][self.pos[1] - 1].remove("wumpus")
+            else:
+                self.arrows -= 1
                 self.knowledge[self.pos[0]][self.pos[1] - 1].remove("wumpus")
         elif (self.pos[0] + 1, self.pos[1]) in self.frontierCells:
             self.direction = 0
@@ -237,7 +249,7 @@ class Agent:
 
     def solve(self):
         bumped = False
-        while not (self.won or self.deadbyWumps or self.deadbyPit):
+        while not (self.won or self.deadbyWumpus or self.deadbyPit):
             bumped = self.takeAction(bumped)
 
         # returns if gold found or dead, number of wumpus killed, number of cells explored, and number of actions
