@@ -15,13 +15,13 @@ class Main:
         self.P_wumpus = 0.10
 
     def main(self):
-        for i in range(1):
-            self.agentWorlds.append(WumpWorld(5, self.P_pit, self.P_obs, self.P_wumpus))
-        for w in self.agentWorlds:
-            self.reactiveAgentWorlds.append(w.duplicateProblem)
 
         size = 5
-        posX, posY, arrows = self.agentWorlds[0].generateProblem()
+        for w in range(1):
+            self.agentWorlds.append(WumpWorld(size, self.P_pit, self.P_obs, self.P_wumpus))
+            posX, posY, arrows = self.agentWorlds[0].generateProblem()
+            self.reactiveAgentWorlds.append(self.agentWorlds[w].duplicateProblem())
+
         a = Agent(self.agentWorlds[0], posX, posY, arrows)
         self.agentWorlds[0].printWorld()
         self.reactiveAgentWorlds[0].printWorld()
