@@ -44,7 +44,6 @@ class Agent:
                 if i == 0 or j == 0 or i == self.world.size+1 or j == self.world.size+1:
                     self.knowledge[i][j].append("wall")
                     self.knowledge[i][j].append("safe")
-        print(self.knowledge)
     # populate rules [] with all the rules we are defining
     def populateRules(self):
         # if empty, all adjacent cells are safe
@@ -275,7 +274,7 @@ class Agent:
         bumped = False
         while not (self.won or self.deadbyWumpus or self.deadbyPit):
             bumped = self.takeAction(bumped)
-            if self.actions == 1000:
+            if self.actions == 3000:
                 break
 
         # returns if gold found or dead, number of wumpus killed, number of cells explored, and number of actions
