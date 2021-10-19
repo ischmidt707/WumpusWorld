@@ -58,7 +58,7 @@ class WumpWorld:
         return copy.deepcopy(self)
 
     # print out the current board state
-    def printWorld(self):
+    def printWorld(self, playerX, playerY):
 
         printDict = {
             "empty": "*",
@@ -71,7 +71,10 @@ class WumpWorld:
 
         for y in range(self.size+2):
             for x in range(self.size+2):
-                print(printDict[self.board[x][y]], end="")
+                if([x, y] == [playerX, playerY]):
+                    print('A', end="")
+                else:
+                    print(printDict[self.board[x][y]], end="")
             print("")
         print("")
 

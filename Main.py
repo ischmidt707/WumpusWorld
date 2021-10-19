@@ -23,7 +23,7 @@ class Main:
             self.reactiveAgentWorlds.append(self.agentWorlds[w].duplicateProblem())
 
         a = Agent(self.agentWorlds[0], posX, posY, arrows)
-        self.agentWorlds[0].printWorld()
+        self.agentWorlds[0].printWorld(posX, posY)
 
         won, deadbyWumpus, deadbyPit, wumpusDead, exploredCount, actionCount = a.solve()
         print(won, deadbyWumpus, deadbyPit, wumpusDead, exploredCount, actionCount)
