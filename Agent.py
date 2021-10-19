@@ -43,6 +43,7 @@ class Agent:
                 self.knowledge[i][j].remove("world")
                 if i == 0 or j == 0 or i == self.world.size+1 or j == self.world.size+1:
                     self.knowledge[i][j].append("wall")
+                    self.knowledge[i][j].append("safe")
         print(self.knowledge)
     # populate rules [] with all the rules we are defining
     def populateRules(self):
@@ -70,7 +71,7 @@ class Agent:
         updated = False
         # if type is and, adjust all adjacent
         if rule.type == "and":
-            if rule.LHS == percept:
+            if rule.LHS in percept:
                 if (self.updateKnowledge(x, y + 1, rule.RHS) or
                         self.updateKnowledge(x, y - 1, rule.RHS) or
                         self.updateKnowledge(x - 1, y, rule.RHS) or
@@ -79,25 +80,25 @@ class Agent:
                     updated = True
         # if type is or, check if only one is still possible
         if rule.type == "or":
-            if rule.LHS == percept:
-                templist = [self.knowledge(x, y - 1), self.knowledge(x, y + 1), self.knowledge(x - 1, y),
-                            self.knowledge(x + 1, y)]
+            if rule.LHS in percept:
+                templist = [self.knowledge[x][y - 1], self.knowledge[x][y + 1], self.knowledge[x - 1][y],
+                            self.knowledge[x + 1][y]]
                 if templist.count("safe") == 3:
-                    if "safe" not in (self.knowledge(x, y - 1)):
-                        (self.knowledge(x, y - 1)).append(rule.RHS)
+                    if "safe" not in (self.knowledge[x][y - 1]):
+                        (self.knowledge[x][y - 1]).append(rule.RHS)
                         updated = True
-                    if "safe" not in (self.knowledge(x, y + 1)):
-                        (self.knowledge(x, y + 1)).append(rule.RHS)
+                    if "safe" not in (self.knowledge[x][y + 1]):
+                        (self.knowledge[x][y + 1]).append(rule.RHS)
                         updated = True
-                    if "safe" not in (self.knowledge(x - 1, y)):
-                        (self.knowledge(x - 1, y)).append(rule.RHS)
+                    if "safe" not in (self.knowledge[x - 1][y]):
+                        (self.knowledge[x - 1][y]).append(rule.RHS)
                         updated = True
-                    if "safe" not in (self.knowledge(x + 1, y)):
-                        (self.knowledge(x + 1, y)).append(rule.RHS)
+                    if "safe" not in (self.knowledge[x + 1][y]):
+                        (self.knowledge[x + 1][y]).append(rule.RHS)
                         updated = True
         # if type is facing apply it only to tile agent is facing
         if rule.type == "facing":
-            if rule.LHS == percept:
+            if rule.LHS in percept:
                 if self.direction == 0:
                     if self.updateKnowledge(x + 1, y, rule.RHS):
                         updated = True
@@ -112,7 +113,7 @@ class Agent:
                         updated = True
         # if type is is, just check current tile
         if rule.type == "is":
-            if rule.LHS == percept:
+            if rule.LHS in percept:
                 if self.updateKnowledge(x, y, rule.RHS):
                     updated = True
         return updated
@@ -125,14 +126,11 @@ class Agent:
             for rule in self.rules:
                 if self.resolve(x, y, rule, percept):
                     updated = True
+        return
 
     def takeAction(self, bumped):
         x = self.pos[0]
         y = self.pos[1]
-        self.world.printWorld(x,y)
-        print(self.frontierCells)
-        print(self.safeCells)
-        print(self.knowledge)
         self.actions += 1
         # check percepts in current spot
         percept = self.world.perceiveCell(self.pos[0], self.pos[1])
@@ -215,6 +213,8 @@ class Agent:
         elif (self.pos[0] + 1, self.pos[1]) in self.frontierCells:
             self.direction = 0
             if "bump" not in self.world.perceiveCell(self.pos[0] + 1, self.pos[1]):
+
+                self.frontierCells.remove((self.pos[0] + 1, self.pos[1]))
                 self.pos[0] += 1
             else:
                 self.frontierCells.remove((self.pos[0] + 1, self.pos[1]))
@@ -222,6 +222,7 @@ class Agent:
         elif (self.pos[0], self.pos[1] + 1) in self.frontierCells:
             self.direction = 90
             if "bump" not in self.world.perceiveCell(self.pos[0], self.pos[1] + 1):
+                self.frontierCells.remove((self.pos[0], self.pos[1] + 1))
                 self.pos[1] += 1
             else:
                 self.frontierCells.remove((self.pos[0], self.pos[1] + 1))
@@ -229,13 +230,17 @@ class Agent:
         elif (self.pos[0] - 1, self.pos[1]) in self.frontierCells:
             self.direction = 180
             if "bump" not in self.world.perceiveCell(self.pos[0] - 1, self.pos[1]):
+
+                self.frontierCells.remove((self.pos[0] - 1, self.pos[1]))
                 self.pos[0] -= 1
             else:
                 self.frontierCells.remove((self.pos[0] - 1, self.pos[1]))
                 bumped = True
         elif (self.pos[0], self.pos[1] - 1) in self.frontierCells:
             self.direction = 270
-            if "bump" not in self.world.perceiveCell[self.pos[0]][self.pos[1] - 1]:
+            if "bump" not in self.world.perceiveCell(self.pos[0],self.pos[1] - 1):
+
+                self.frontierCells.remove((self.pos[0], self.pos[1] - 1))
                 self.pos[1] -= 1
             else:
                 self.frontierCells.remove((self.pos[0], self.pos[1] - 1))
@@ -270,6 +275,8 @@ class Agent:
         bumped = False
         while not (self.won or self.deadbyWumpus or self.deadbyPit):
             bumped = self.takeAction(bumped)
+            if self.actions == 1000:
+                break
 
         # returns if gold found or dead, number of wumpus killed, number of cells explored, and number of actions
         return self.won, self.deadbyWumpus, self.deadbyPit, self.wumpusDead, len(self.safeCells), self.actions
