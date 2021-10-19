@@ -22,3 +22,7 @@ class Main:
 
         self.agentWorlds[0].printWorld()
         self.reactiveAgentWorlds[0].printWorld()
+
+
+m = Main()
+Main.main()
