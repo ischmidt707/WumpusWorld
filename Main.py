@@ -89,7 +89,7 @@ class Main:
         totalex = 0
         totalact = 0
         for i in self.reactiveAgentWorlds:
-            a = Agent(i, self.PosXarr[counter], self.PosYarr[counter], self.arrowsarr[counter])
+            a = ReactiveAgent(i, self.PosXarr[counter], self.PosYarr[counter], self.arrowsarr[counter])
             counter += 1
             won, deadbyWumpus, deadbyPit, wumpusDead, exploredCount, actionCount = a.solve()
             totalwon += won
