@@ -25,7 +25,7 @@ class Agent:
         self.frontierCells = set([])
         self.safeCells = set([])
         self.pathingRoute = []
-        self.knowledge = [[""]*(self.world.size+2)]*(self.world.size+2)  # add buffer around world for safe markers
+        self.knowledge = [[0 for i in range(self.world.size+2)] for j in range(self.world.size+2)]  # add buffer around world for safe markers
         self.pos = [x,y]
         self.direction = 0  # like unit circle, 0 is facing right, 90 up, 180 left, 270 down
         self.deadbyWumpus = False
@@ -249,6 +249,7 @@ class Agent:
             elif self.direction == 270:
                 if "wall" not in self.knowledge[self.pos[0], self.pos[1] - 1]:
                     self.pos[1] -= 1
+            popped = True
         # before moving on, add current cell to pathing route stack if any position has changed and not already backtracking
         if (x != self.pos[0] or y != self.pos[1]) and not popped:
             self.pathingRoute.append((self.pos[0], self.pos[1]))

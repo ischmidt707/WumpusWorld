@@ -88,6 +88,7 @@ class ReactiveAgent:
             elif self.direction == 270:
                 if self.world.board[self.pos[0]][self.pos[1] - 1] != "wall":
                     self.pos[1] -= 1
+            popped = True
         # before moving on, add current cell to pathing route stack if any position has changed and not already backtracking
         if (x != self.pos[0] or y != self.pos[1]) and not popped:
             self.pathingRoute.append((self.pos[0], self.pos[1]))
