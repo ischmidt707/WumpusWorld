@@ -26,7 +26,7 @@ class Agent:
         self.safeCells = set([])
         self.pathingRoute = []
         self.knowledge = [[""]*(self.world.size+2)]*(self.world.size+2)  # add buffer around world for safe markers
-        self.pos = (x,y)
+        self.pos = [x,y]
         self.direction = 0  # like unit circle, 0 is facing right, 90 up, 180 left, 270 down
         self.deadbyWumpus = False
         self.deadbyPit = False

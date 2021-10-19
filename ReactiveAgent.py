@@ -11,7 +11,7 @@ class ReactiveAgent:
 
     def __init__(self, world, x, y):
         self.world = world
-        self.pos = (x,y)
+        self.pos = [x,y]
         self.actions = 0
         self.safelist = set([])
         self.frontierCells = set([])
