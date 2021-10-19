@@ -131,6 +131,7 @@ class Agent:
         x = self.pos[0]
         y = self.pos[1]
         self.actions += 1
+        print(self.world.board)
         # check percepts in current spot
         percept = self.world.perceiveCell(self.pos[0], self.pos[1])
         # check for game ending conditions
