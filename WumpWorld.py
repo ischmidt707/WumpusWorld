@@ -8,35 +8,49 @@ import copy
 
 class WumpWorld:
     def __init__(self, size, P_pit, P_obs, P_wumpus):
-        self.sqSize = size
+        self.size = size
         self.P_pit = P_pit
         self.P_obs = P_obs
         self.P_wumpus = P_wumpus
-        self.board = [size][size]
+        self.board = [[0]*(size+2)]*(size+2)
 
     # problem/world generator function
     def generateProblem(self):
-        startX, startY = [random.randint(0, self.sqSize - 1), random.randint(0, self.sqSize - 1)]
+        startX, startY = [random.randint(1, self.size), random.randint(1, self.size)]
         self.board[startX][startY] = 'empty'
         goldX, goldY = [startX, startY]
         while [goldX, goldY] == [startX, startY]:
-            goldX, goldY = [random.randint(0, self.sqSize - 1), random.randint(0, self.sqSize - 1)]
-        self.board[goldX, goldY] = 'gold'
-        for x in range(self.sqSize):
-            for y in range(self.sqSize):
+            goldX, goldY = [random.randint(1, self.size), random.randint(1, self.size)]
+        self.board[goldX][goldY] = 'gold'
+
+        for k in range(self.size + 2):
+            self.board[0][k] = 'wall'
+            self.board[self.size + 1][k] = 'wall'
+
+        # we will keep track of how many wumpuses spawn so we have that many arrows
+        wumpCount = 0
+
+        # fill out the board randomly
+        for x in range(1, self.size + 1):
+            self.board[x][0] = 'wall'
+            self.board[x][self.size + 1] = 'wall'
+            for y in range(1, self.size + 1):
                 # make sure not to override the agent's start space or the gold
                 if ([x, y] != [startX, startY] and [x, y] != [goldX, goldY]):
-                    rand = random.random
+                    rand = random.random()
                     if (rand < self.P_pit):
                         self.board[x][y] = 'pit'
                     elif (rand < (self.P_pit + self.P_obs)):
                         self.board[x][y] = 'wall'
                     elif (rand < (self.P_pit + self.P_obs + self.P_wumpus)):
                         self.board[x][y] = 'wumpus'
+                        wumpCount += 1
                     else:
                         self.board[x][y] = 'empty'
-        # return the starting position so the agent knows where it is
-        return startX, startY
+
+
+        # return the starting position so the agent knows where it is, and number of wumpuses
+        return startX, startY, wumpCount
 
     # make a duplicate world for controlled experiments
     def duplicateProblem(self):
@@ -48,17 +62,18 @@ class WumpWorld:
             "empty": "*",
             "pit": "P",
             "wumpus": "W",
-            "wall": "O"
+            "wall": "O",
+            "gold": "G"
         }
-        for x in range(self.sqSize):
-            for y in range(self.sqSize):
+        for x in range(self.size):
+            for y in range(self.size):
                 print(printDict[self.board[x][y]])
             print("\n")
 
     def validCell(self, x, y):
         if (x < 0 or y < 0):
             return False
-        elif (x > self.sqSize - 1 or y > self.sqSize - 1):
+        elif (x > self.size - 1 or y > self.size - 1):
             return False
         else:
             return True
