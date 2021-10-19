@@ -17,10 +17,10 @@ class Implies:
 class Agent:
 
     # initialize instance of agent
-    def __init__(self, world, x, y):
+    def __init__(self, world, x, y, arrows):
         self.actions = 0
         self.world = world
-        self.arrows = 0
+        self.arrows = arrows
         self.wumpusDead = 0
         self.frontierCells = set([])
         self.safeCells = set([])
